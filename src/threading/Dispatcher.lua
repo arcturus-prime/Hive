@@ -1,7 +1,10 @@
-local Dispatcher = {}
+local Thread = require(script.Parent.Thread)
 
-function Dispatcher.spawn(func: (Thread, ...any) -> any)
+
+local module = {}
+
+function module.spawn(func: (Thread.Thread, ...any) -> nil)
 
 end
 
-return Dispatcher
+return module
