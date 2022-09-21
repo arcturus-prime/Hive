@@ -1,10 +1,13 @@
 local Thread = require(script.Parent.Thread)
 
 
+local cores = {}
+
+
 local module = {}
 
-function module.spawn(func: (Thread.Thread, ...any) -> nil)
-
+function module.spawn(routine: ModuleScript)
+	
 end
 
 return module

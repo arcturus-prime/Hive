@@ -1,6 +1,7 @@
 export type Thread = {
-	id: number,
-	comm: BindableEvent
+	routine: ModuleScript,
+	comm: BindableEvent,
+	
 }
 
 
