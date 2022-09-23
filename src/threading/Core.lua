@@ -1,11 +1,11 @@
 local Thread = require(script.Parent.Thread)
-local CommandHandler = require(script.Parent.Parent.utility.CommandHandler)
+local Channel = require(script.Parent.Parent.utility.Channel)
 local CoreRuntime = script.Parent.CoreRuntime
 
 
 export type Core = {
 	actor: Actor,
-	comm: CommandHandler.CommandHandler
+	comm: Channel.Channel
 }
 
 
@@ -20,7 +20,7 @@ function module.create(parent: Instance)
 	event.Parent = actor
 	runtime.Parent = actor
 
-	local ch = CommandHandler.create(event, true)
+	local ch = Channel.create(event, true)
 
 	local core: Core = { actor = actor, comm = ch }
 
