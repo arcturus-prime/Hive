@@ -1,13 +1,23 @@
-local Thread = require(script.Parent.Thread)
+--!strict
+
+local Worker = require(script.Parent.Worker)
 
 
-local cores = {}
+export type Dispatcher = {
+	workers: { Worker.Worker }
+	folder: Folder
+}
 
 
-local module = {}
+local function create(parent: Instance)
+	local folder = Instance.new("Folder")
 
-function module.spawn(routine: ModuleScript)
-	
+	folder.Name = "Workers"
+	folder.Parent = parent
+
+	local dispatcher: Dispatcher = { folder = folder, workers = {} }
+
+	return dispatcher
 end
 
-return module
+local function 
