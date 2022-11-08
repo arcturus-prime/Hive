@@ -1,15 +1,7 @@
 --!strict
 
 local Channel = require(script.Parent.Parent.utility.Channel)
-local Subchannel = require(script.Parent.Parent.utility.Subchannel)
 local WorkerRuntime = script.Parent.WorkerRuntime
-
-
-export type Worker = {
-	actor: Actor,
-	comm: Channel.Channel
-}
-
 
 local function create(parent: Instance)
 	local actor = Instance.new("Actor")
@@ -37,7 +29,6 @@ end
 
 local function spawn(worker: Worker, routine: ModuleScript)
 	Channel.fire(worker.comm, "spawn", routine)
-	return Subchannel.create(worker.comm, "thread")
 end
 
 

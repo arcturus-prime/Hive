@@ -2,13 +2,6 @@
 
 local Worker = require(script.Parent.Worker)
 
-
-export type Dispatcher = {
-	workers: { Worker.Worker }
-	folder: Folder
-}
-
-
 local function create(parent: Instance)
 	local folder = Instance.new("Folder")
 
