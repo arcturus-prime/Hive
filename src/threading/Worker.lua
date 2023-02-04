@@ -1,29 +1,75 @@
-local Channel = require(script.Parent.Channel)
+local WorkerInternal = script.Parent.WorkerInternal
 
-local function spawn(parent: Instance, routine: Script)
+
+local function reserve(worker)
+	local id = worker[1]
+
+	if not worker[id] then
+		worker[1] = worker[2]
+		worker[2] += 1
+	else
+		worker[1] = worker[id]
+	end
+
+	return id
+end
+
+local function collect(worker, id: number)
+	while worker[id] == nil do task.wait() end
+
+	local result = worker[id]
+	worker[id] = worker[1]
+	worker[1] = id
+
+	return result
+end
+
+local function create(parent: Instance, routine: ModuleScript)
 	local actor = Instance.new("Actor")
 	local send = Instance.new("BindableEvent")
 	local receive = Instance.new("BindableEvent")
-	local routineCopy = routine:Clone()
+	local routineValue = Instance.new("ObjectValue")
+	local runtime = WorkerInternal:Clone()
+
+	runtime.Enabled = true
 
 	actor.Name = "Worker"
 	send.Name = "send"
 	receive.Name = "receive"
-	routineCopy.Name = "routine"
+	routineValue.Name = "routine"
 
 	send.Parent = actor
 	receive.Parent = actor
-	routineCopy.Parent = actor
+	runtime.Parent = actor
+	routineValue.Parent = actor
 
+	routineValue.Value = routine
+	
 	actor.Parent = parent
 
-	local ch = Channel.create(send, receive)
+	local worker = {
+		actor = actor,
+		[1] = 3,
+		[2] = 3
+	}
 
-	return ch
+	receive.Event:Connect(function (id, ...)
+		worker[id] = table.pack(...)
+	end)
+
+	return worker
 end
 
+local function thread(worker, command, ...)
+	local id = reserve(worker)
 
+	worker.actor.send:Fire(id, command, ...)
+
+	return id
+end
 
 return {
-	spawn = spawn
+	create = create,
+	thread = thread,
+	collect = collect
 }

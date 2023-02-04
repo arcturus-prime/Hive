@@ -1,9 +1,16 @@
-local Channel = require(script.Parent.Channel)
+local routine = require(script.Parent.routine.Value)
 
-local function channel(routine: Script)
-	return Channel.create(routine.Parent.receive, routine.Parent.send)
+local receive = script.Parent.receive
+local send = script.Parent.send
+
+
+local handlers = {}
+
+local function sent(id, task, ...)
+	receive:Fire(id, handlers[task](...))
 end
 
-return {
-	channel = channel
-} 
+send.Event:ConnectParallel(sent)
+
+
+routine(handlers)
