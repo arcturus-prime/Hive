@@ -7,8 +7,8 @@ local RunService = game:GetService("RunService")
 local Internal
 
 if (RunService.IsServer)
-then Internal = script.Parent.InternalServer
-else Internal = script.Parent.InternalClient end
+then Internal = script.InternalServer
+else Internal = script.InternalClient end
 
 
 local function reserve(worker: Worker): number
