@@ -9,6 +9,6 @@
 888    888 888   Y88P    "Y8888  
 ```
 ---
-## A compact threading and distributed computing library for Roblox.
+## A compact threading library for Roblox.
 
 

@@ -1,4 +1,11 @@
-local WorkerInternal = script.Parent.WorkerInternal
+local RunService = game:GetService("RunService")
+
+
+local Internal
+
+if (RunService.IsServer)
+then Internal = script.Parent.InternalServer
+else Internal = script.Parent.InternalClient end
 
 
 local function reserve(worker)
@@ -29,7 +36,7 @@ local function create(parent: Instance, routine: ModuleScript)
 	local send = Instance.new("BindableEvent")
 	local receive = Instance.new("BindableEvent")
 	local routineValue = Instance.new("ObjectValue")
-	local runtime = WorkerInternal:Clone()
+	local runtime = Internal:Clone()
 
 	runtime.Enabled = true
 
