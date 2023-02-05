@@ -3,5 +3,6 @@ name = "arcturus-prime/hive"
 version = "0.1.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
+description = "A compact library for interfacing with Actors"
 
 [dependencies]
