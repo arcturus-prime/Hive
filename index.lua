@@ -1,3 +1,6 @@
+export type Worker = { actor: Actor, ...any }
+
+
 local RunService = game:GetService("RunService")
 
 
@@ -21,15 +24,6 @@ local function reserve(worker)
 	return id
 end
 
-local function collect(worker, id: number)
-	while worker[id] == nil do task.wait() end
-
-	local result = worker[id]
-	worker[id] = worker[1]
-	worker[1] = id
-
-	return result
-end
 
 local function create(parent: Instance, routine: ModuleScript)
 	local actor = Instance.new("Actor")
@@ -54,7 +48,7 @@ local function create(parent: Instance, routine: ModuleScript)
 	
 	actor.Parent = parent
 
-	local worker = {
+	local worker: Worker = {
 		actor = actor,
 		[1] = 3,
 		[2] = 3
@@ -67,12 +61,22 @@ local function create(parent: Instance, routine: ModuleScript)
 	return worker
 end
 
-local function thread(worker, command, ...)
-	local id = reserve(worker)
+local function thread(worker: Worker, command: any, ...)
+	local id: number = reserve(worker)
 
 	worker.actor.send:Fire(id, command, ...)
 
 	return id
+end
+
+local function collect(worker: Worker, id: number)
+	while worker[id] == nil do task.wait() end
+
+	local result: {...any} = worker[id]
+	worker[id] = worker[1]
+	worker[1] = id
+
+	return result
 end
 
 return {
