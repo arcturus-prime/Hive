@@ -1,4 +1,4 @@
-export type Worker = { actor: Actor, ...any }
+export type Worker = { actor: Actor, [number]: any }
 
 
 local RunService = game:GetService("RunService")
@@ -11,7 +11,7 @@ then Internal = script.Parent.InternalServer
 else Internal = script.Parent.InternalClient end
 
 
-local function reserve(worker)
+local function reserve(worker: Worker): number
 	local id = worker[1]
 
 	if not worker[id] then
@@ -25,7 +25,7 @@ local function reserve(worker)
 end
 
 
-local function create(parent: Instance, routine: ModuleScript)
+local function create(parent: Instance, routine: ModuleScript): Worker
 	local actor = Instance.new("Actor")
 	local send = Instance.new("BindableEvent")
 	local receive = Instance.new("BindableEvent")
@@ -61,7 +61,7 @@ local function create(parent: Instance, routine: ModuleScript)
 	return worker
 end
 
-local function thread(worker: Worker, command: any, ...)
+local function thread(worker: Worker, command: any, ...): number
 	local id: number = reserve(worker)
 
 	worker.actor.send:Fire(id, command, ...)
@@ -69,10 +69,10 @@ local function thread(worker: Worker, command: any, ...)
 	return id
 end
 
-local function collect(worker: Worker, id: number)
+local function collect(worker: Worker, id: number): { any }
 	while worker[id] == nil do task.wait() end
 
-	local result: {...any} = worker[id]
+	local result: { any } = worker[id]
 	worker[id] = worker[1]
 	worker[1] = id
 
