@@ -28,7 +28,7 @@ MyScript
 ```lua
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Hive = ReplicatedStorage.Packages.Hive
+local Hive = require(ReplicatedStorage.Packages.Hive)
 
 local worker = Hive.create(ReplicatedStorage.Workers, ReplicatedStorage.Scripts.MyTaskList)
 
