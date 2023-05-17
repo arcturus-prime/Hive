@@ -1,6 +1,6 @@
 local RunService = game:GetService("RunService")
 
-local Internal = script.Parent
+local Internal = script.Internal
 
 
 export type Worker = { actor: Actor, [number]: any }
