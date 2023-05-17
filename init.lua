@@ -1,6 +1,6 @@
 local RunService = game:GetService("RunService")
 
-local Internal = script.Internal
+local Internal = if RunService:IsServer() then script.InternalServer else script.InternalClient
 
 
 export type Worker = { actor: Actor, [number]: any }
@@ -44,7 +44,6 @@ function module.create(parent: Instance, routine: ModuleScript): Worker
 	local runtime = Internal:Clone()
 
 	runtime.Enabled = true
-	runtime.RunContext = if RunService.IsServer then Enum.RunContext.Server else Enum.RunContext.Client
 
 	actor.Name = "Worker"
 	send.Name = "send"
