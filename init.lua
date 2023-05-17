@@ -99,18 +99,18 @@ end
 	@within Hive
 	@param worker Worker
 	@param id number
-	@return { any }
+	@return ...any
 
 	Collects and returns the results of a task. If the task is not finished, it yields the caller until the task has completed.
 ]=]
-function module.collect(worker: Worker, id: number): { any }
+function module.collect(worker: Worker, id: number): ...any
 	while worker[id] == nil do task.wait() end
 
 	local result: { any } = worker[id]
 	worker[id] = worker[1]
 	worker[1] = id
 
-	return result
+	return table.unpack(result)
 end
 
 return module
