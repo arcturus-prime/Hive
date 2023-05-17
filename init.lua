@@ -1,15 +1,18 @@
+local RunService = game:GetService("RunService")
+
+local Internal = script.Parent.Internal
+
+
 export type Worker = { actor: Actor, [number]: any }
 
 
-local RunService = game:GetService("RunService")
-
-
-local Internal
-
-if (RunService.IsServer)
-then Internal = script.InternalServer
-else Internal = script.InternalClient end
-
+--[=[
+	@interface Hive
+	.reserve
+	.create
+	.collect
+]=]
+local module = {}
 
 local function reserve(worker: Worker): number
 	local id = worker[1]
@@ -24,8 +27,16 @@ local function reserve(worker: Worker): number
 	return id
 end
 
+--[=[
+	@function create
+	@within Hive
+	@param parent Instance
+	@param routine ModuleScript
+	@return Worker
 
-local function create(parent: Instance, routine: ModuleScript): Worker
+	Takes in the [Instance] to parent the [Actor] (along with its signals, etc.) to and the [ModuleScript] containing the task table.
+]=]
+function module.create(parent: Instance, routine: ModuleScript): Worker
 	local actor = Instance.new("Actor")
 	local send = Instance.new("BindableEvent")
 	local receive = Instance.new("BindableEvent")
@@ -33,6 +44,7 @@ local function create(parent: Instance, routine: ModuleScript): Worker
 	local runtime = Internal:Clone()
 
 	runtime.Enabled = true
+	runtime.RunContext = if RunService.IsServer then Enum.RunContext.Server else Enum.RunContext.Client
 
 	actor.Name = "Worker"
 	send.Name = "send"
@@ -61,7 +73,20 @@ local function create(parent: Instance, routine: ModuleScript): Worker
 	return worker
 end
 
-local function thread(worker: Worker, command: any, ...): number
+
+--[=[
+	@function thread
+	@within Hive
+	@param worker Worker
+	@param command any
+	@param args ...
+	@return number
+
+	Uses a [Worker] record to spawn a new thread with specified arguments using a task from that [Worker]'s task table.
+	Returns an id corresponding to an index in the worker's results table for use in [Hive.collect]
+
+]=]
+function module.thread(worker: Worker, command: any, ...): number
 	local id: number = reserve(worker)
 
 	worker.actor.send:Fire(id, command, ...)
@@ -69,7 +94,16 @@ local function thread(worker: Worker, command: any, ...): number
 	return id
 end
 
-local function collect(worker: Worker, id: number): { any }
+--[=[
+	@function collect
+	@within Hive
+	@param worker Worker
+	@param id number
+	@return { any }
+
+	Collects and returns the results of a task. If the task is not finished, it yields the caller until the task has completed.
+]=]
+function module.collect(worker: Worker, id: number): { any }
 	while worker[id] == nil do task.wait() end
 
 	local result: { any } = worker[id]
@@ -79,8 +113,4 @@ local function collect(worker: Worker, id: number): { any }
 	return result
 end
 
-return {
-	create = create,
-	thread = thread,
-	collect = collect
-}
+return module
